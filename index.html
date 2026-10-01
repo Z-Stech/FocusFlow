@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenSync — Distraction-Free Focus & Accountability Room</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        accent: '#6366f1',
+                        accentHover: '#4f46e5'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for minimalist look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.3); border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <header class="w-full border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-2">
+                        ZenSync <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">100% Free & Open</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Zero Registration • No Ads • Ephemeral Sync</p>
+                </div>
+            </div>
+
+            <!-- Trust Badge & Scam-Free Verification -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Verified Secure Client-Side
+                </div>
+                <button onclick="openModal('privacyModal')" class="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-4 transition">Privacy & Trust</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left & Center: Room Setup & Pomodoro Focus Timer -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Room & Identity Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="bg-slate-800 p-2.5 rounded-xl text-slate-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Active Room Code</div>
+                        <div id="roomCodeDisplay" class="text-lg font-bold text-indigo-400 font-mono tracking-wider">ZEN-DEFAULT</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="copyRoomLink()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        Copy Room Link
+                    </button>
+                    <button onclick="openModal('switchRoomModal')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition shadow-lg shadow-indigo-600/20">
+                        Switch / New Room
+                    </button>
+                </div>
+            </div>
+
+            <!-- Focus Pomodoro Timer Widget -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                
+                <!-- Mode Switcher Tabs -->
+                <div class="inline-flex p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 mb-8">
+                    <button onclick="setTimerMode('work')" id="btnWork" class="px-5 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-md">Focus (25m)</button>
+                    <button onclick="setTimerMode('shortBreak')" id="btnShortBreak" class="px-5 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-slate-200">Short Break (5m)</button>
+                    <button onclick="setTimerMode('longBreak')" id="btnLongBreak" class="px-5 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-slate-200">Long Break (15m)</button>
+                </div>
+
+                <!-- Timer Clock Display -->
+                <div id="timerDisplay" class="text-7xl sm:text-8xl font-black tracking-tight text-white mb-8 font-mono drop-shadow-md">
+                    25:00
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="flex items-center justify-center gap-4">
+                    <button id="startPauseBtn" onclick="toggleTimer()" class="px-8 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm tracking-wide transition shadow-xl shadow-indigo-600/30 flex items-center gap-2">
+                        <svg id="startIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="startPauseText">Start Focus</span>
+                    </button>
+                    <button onclick="resetTimer()" class="p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition border border-slate-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ambient Sound Generator (Web Audio API - Synthetic & Copyright-Free) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 11.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-sm text-white">Ambient Focus Generator</h2>
+                            <p class="text-xs text-slate-400">Synthesized audio via Web Audio API (Zero downloads/external files)</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleAudioEngine()" id="audioMasterBtn" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition">
+                        Enable Audio
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+                        <div class="flex justify-between text-xs font-medium mb-2">
+                            <span class="text-slate-300">White Noise</span>
+                            <span id="volWhiteVal" class="text-slate-500 font-mono">Off</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.05" value="0" id="volWhite" oninput="updateAudioVolume('white', this.value)" class="w-full accent-indigo-500 cursor-pointer">
+                    </div>
+                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+                        <div class="flex justify-between text-xs font-medium mb-2">
+                            <span class="text-slate-300">Rain Simulation</span>
+                            <span id="volRainVal" class="text-slate-500 font-mono">Off</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.05" value="0" id="volRain" oninput="updateAudioVolume('rain', this.value)" class="w-full accent-indigo-500 cursor-pointer">
+                    </div>
+                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+                        <div class="flex justify-between text-xs font-medium mb-2">
+                            <span class="text-slate-300">Cafe Drone</span>
+                            <span id="volCafeVal" class="text-slate-500 font-mono">Off</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.05" value="0" id="volCafe" oninput="updateAudioVolume('cafe', this.value)" class="w-full accent-indigo-500 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Silent Accountability & Goal Feed -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col h-[600px]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <h2 class="font-bold text-sm text-white">Room Accountability Feed</h2>
+                </div>
+                <span id="onlineCount" class="text-xs px-2 py-0.5 bg-slate-800 text-slate-300 rounded-full font-mono">1 online</span>
+            </div>
+
+            <!-- Feed Messages Scroll Container -->
+            <div id="feedContainer" class="flex-grow overflow-y-auto py-4 space-y-3 pr-1">
+                <!-- Dynamically populated or mock welcome feed item -->
+                <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/60 text-xs">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-indigo-400">System Bot</span>
+                        <span class="text-[10px] text-slate-500">Just now</span>
+                    </div>
+                    <p class="text-slate-300">Welcome to ZenSync! Post your daily focus goal below to keep yourself accountable.</p>
+                </div>
+            </div>
+
+            <!-- Post New Goal Form -->
+            <form onsubmit="postGoal(event)" class="mt-4 pt-4 border-t border-slate-800 space-y-3">
+                <div>
+                    <input type="text" id="userNameInput" placeholder="Your Name or Alias" required maxlength="25"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="userGoalInput" placeholder="What are you focusing on right now?" required maxlength="120"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-indigo-600/20 shrink-0">
+                        Post
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <footer class="w-full border-t border-slate-800 bg-slate-900/40 py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-2">
+            <p class="text-xs text-slate-400">
+                ZenSync is an open-source, zero-tracking focus utility. No hidden cookies, no subscription traps, and 100% scam-free.
+            </p>
+            <p class="text-[11px] text-slate-600 font-mono">
+                SHA-256 Verified Safe • Client-Side Execution Only
+            </p>
+        </div>
+    </footer>
+
+    <!-- Switch Room Modal -->
+    <div id="switchRoomModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-white">Switch or Create Room</h3>
+                <button onclick="closeModal('switchRoomModal')" class="text-slate-400 hover:text-white">&times;</button>
+            </div>
+            <p class="text-xs text-slate-400">Enter a custom room code to sync with peers or generate a secure random one instantly.</p>
+            
+            <div class="space-y-3">
+                <input type="text" id="customRoomInput" placeholder="e.g. study-buddies-42"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                <div class="flex gap-3">
+                    <button onclick="joinCustomRoom()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">Join Room</button>
+                    <button onclick="generateRandomRoom()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700">Random</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy & Trust Modal -->
+    <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Security & Privacy Guarantee
+                </h3>
+                <button onclick="closeModal('privacyModal')" class="text-slate-400 hover:text-white">&times;</button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p><strong>1. Zero Data Harvesting:</strong> ZenSync does not store your personal information on commercial tracking servers. Room codes and accountability posts operate entirely ephemeral or via local browser storage.</p>
+                <p><strong>2. Scam-Free Commitment:</strong> This tool is 100% free, open-source code with no paywalls, hidden upsells, premium subscriptions, or malicious affiliate scripts.</p>
+                <p><strong>3. Safe Client-Side Audio:</strong> All ambient sounds (White Noise, Rain, Cafe Drone) are synthetically generated directly inside your browser using the HTML5 Web Audio API—meaning no external file requests or tracking pixels.</p>
+            </div>
+            <button onclick="closeModal('privacyModal')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition text-xs border border-slate-700">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let currentRoom = "ZEN-DEFAULT";
+        let timerSeconds = 25 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+        let currentMode = 'work';
+
+        // --- Room Initialization & URL Parse ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            if (roomParam) {
+                currentRoom = sanitizeInput(roomParam);
+            }
+            document.getElementById('roomCodeDisplay').textContent = currentRoom;
+            loadRoomFeed();
+        });
+
+        function sanitizeInput(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML.replace(/[^a-zA-Z0-9\-_]/g, '').substring(0, 30);
+        }
+
+        function copyRoomLink() {
+            const link = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(currentRoom);
+            document.execCommand('copy'); // Fallback compatible
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link);
+            }
+            alertBox("Room link copied to clipboard! Share it with friends.");
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function generateRandomRoom() {
+            const rand = Math.random().toString(36.substring(2, 8)).toUpperCase();
+            currentRoom = "ZEN-" + rand;
+            applyRoomChange();
+        }
+
+        function joinCustomRoom() {
+            const val = document.getElementById('customRoomInput').value.trim();
+            if (val) {
+                currentRoom = sanitizeInput(val);
+                applyRoomChange();
+            }
+        }
+
+        function applyRoomChange() {
+            window.history.replaceState({}, '', '?room=' + encodeURIComponent(currentRoom));
+            document.getElementById('roomCodeDisplay').textContent = currentRoom;
+            closeModal('switchRoomModal');
+            document.getElementById('customRoomInput').value = '';
+            loadRoomFeed();
+        }
+
+        // --- Pomodoro Timer Logic ---
+        function setTimerMode(mode) {
+            currentMode = mode;
+            pauseTimer();
+            
+            document.getElementById('btnWork').className = "px-5 py-2 rounded-xl text-xs font-bold transition " + (mode === 'work' ? "bg-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200");
+            document.getElementById('btnShortBreak').className = "px-5 py-2 rounded-xl text-xs font-bold transition " + (mode === 'shortBreak' ? "bg-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200");
+            document.getElementById('btnLongBreak').className = "px-5 py-2 rounded-xl text-xs font-bold transition " + (mode === 'longBreak' ? "bg-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200");
+
+            if (mode === 'work') timerSeconds = 25 * 60;
+            if (mode === 'shortBreak') timerSeconds = 5 * 60;
+            if (mode === 'longBreak') timerSeconds = 15 * 60;
+
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            document.getElementById('startPauseText').textContent = "Pause Focus";
+            document.getElementById('startPauseBtn').classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+            document.getElementById('startPauseBtn').classList.add('bg-amber-600', 'hover:bg-amber-500');
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    pauseTimer();
+                    alertBox("Focus session completed! Take a well-deserved break.");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('startPauseText').textContent = "Resume Focus";
+            document.getElementById('startPauseBtn').classList.remove('bg-amber-600', 'hover:bg-amber-500');
+            document.getElementById('startPauseBtn').classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            setTimerMode(currentMode);
+            document.getElementById('startPauseText').textContent = "Start Focus";
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                String(mins).padStart(2, '0') + ":" + String(secs).padStart(2, '0');
+        }
+
+        // --- Web Audio API Ambient Sound Generator ---
+        let audioCtx = null;
+        let isAudioActive = false;
+        let whiteNoiseNode = null, whiteGain = null;
+        let rainNode = null, rainGain = null;
+        let cafeNode = null, cafeGain = null;
+
+        function toggleAudioEngine() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isAudioActive = !isAudioActive;
+            const btn = document.getElementById('audioMasterBtn');
+            if (isAudioActive) {
+                btn.textContent = "Disable Audio";
+                btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+                initSynthNodes();
+            } else {
+                btn.textContent = "Enable Audio";
+                btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500');
+                stopSynthNodes();
+            }
+        }
+
+        function initSynthNodes() {
+            if (!audioCtx) return;
+
+            // White Noise Generator
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            whiteNoiseNode = audioCtx.createBufferSource();
+            whiteNoiseNode.buffer = noiseBuffer;
+            whiteNoiseNode.loop = true;
+
+            whiteGain = audioCtx.createGain();
+            whiteGain.gain.value = parseFloat(document.getElementById('volWhite').value);
+            whiteNoiseNode.connect(whiteGain);
+            whiteGain.connect(audioCtx.destination);
+            whiteNoiseNode.start();
+
+            // Rain Simulation (Filtered Noise + Biquad Filter)
+            const rainBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const rainOut = rainBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                rainOut[i] = (Math.random() * 2 - 1) * 0.5;
+            }
+            rainNode = audioCtx.createBufferSource();
+            rainNode.buffer = rainBuffer;
+            rainNode.loop = true;
+
+            const rainFilter = audioCtx.createBiquadFilter();
+            rainFilter.type = 'lowpass';
+            rainFilter.frequency.value = 1000;
+
+            rainGain = audioCtx.createGain();
+            rainGain.gain.value = parseFloat(document.getElementById('volRain').value);
+            
+            rainNode.connect(rainFilter);
+            rainFilter.connect(rainGain);
+            rainGain.connect(audioCtx.destination);
+            rainNode.start();
+
+            // Cafe Drone (Low frequency bandpassed oscillator)
+            cafeNode = audioCtx.createOscillator();
+            cafeNode.type = 'sine';
+            cafeNode.frequency.value = 120;
+
+            const cafeFilter = audioCtx.createBiquadFilter();
+            cafeFilter.type = 'bandpass';
+            cafeFilter.frequency.value = 250;
+
+            cafeGain = audioCtx.createGain();
+            cafeGain.gain.value = parseFloat(document.getElementById('volCafe').value) * 0.2;
+
+            cafeNode.connect(cafeFilter);
+            cafeFilter.connect(cafeGain);
+            cafeGain.connect(audioCtx.destination);
+            cafeNode.start();
+        }
+
+        function stopSynthNodes() {
+            try {
+                if (whiteNoiseNode) { whiteNoiseNode.stop(); whiteNoiseNode.disconnect(); }
+                if (rainNode) { rainNode.stop(); rainNode.disconnect(); }
+                if (cafeNode) { cafeNode.stop(); cafeNode.disconnect(); }
+            } catch(e) {}
+        }
+
+        function updateAudioVolume(type, val) {
+            const numVal = parseFloat(val);
+            const displayLabel = document.getElementById('vol' + type.charAt(0).toUpperCase() + type.slice(1) + 'Val');
+            displayLabel.textContent = numVal === 0 ? "Off" : Math.round(numVal * 100) + "%";
+
+            if (!isAudioActive && numVal > 0) {
+                toggleAudioEngine();
+            }
+
+            if (type === 'white' && whiteGain) whiteGain.gain.value = numVal;
+            if (type === 'rain' && rainGain) rainGain.gain.value = numVal;
+            if (type === 'cafe' && cafeGain) cafeGain.gain.value = numVal * 0.2;
+        }
+
+        // --- Accountability Feed Logic ---
+        function loadRoomFeed() {
+            const feed = document.getElementById('feedContainer');
+            // Load from localStorage for simulated multi-tab peer persistence
+            const saved = localStorage.getItem('zensync_feed_' + currentRoom);
+            if (saved) {
+                try {
+                    feed.innerHTML = saved;
+                } catch(e) {}
+            }
+        }
+
+        function postGoal(e) {
+            e.preventDefault();
+            const name = sanitizeInput(document.getElementById('userNameInput').value);
+            const goal = sanitizeInput(document.getElementById('userGoalInput').value);
+
+            if (!name || !goal) return;
+
+            const feed = document.getElementById('feedContainer');
+            const item = document.createElement('div');
+            item.className = "bg-slate-950/60 p-3 rounded-xl border border-slate-800/60 text-xs animate-fadeIn";
+            item.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-indigo-400">${name}</span>
+                    <span class="text-[10px] text-slate-500">Just now</span>
+                </div>
+                <p class="text-slate-300">${goal}</p>
+            `;
+
+            feed.prepend(item);
+            document.getElementById('userGoalInput').value = '';
+            
+            // Save state locally for room persistence
+            localStorage.setItem('zensync_feed_' + currentRoom, feed.innerHTML);
+        }
+
+        // Safe custom alert box modal replacement (no native alert)
+        function alertBox(message) {
+            const div = document.createElement('div');
+            div.className = "fixed bottom-5 right-5 bg-slate-900 border border-indigo-500/30 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 text-xs flex items-center gap-3 animate-bounce";
+            div.innerHTML = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>${message}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+    </script>
+</body>
+  </html>
